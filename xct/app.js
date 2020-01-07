@@ -22,6 +22,9 @@ var testlatoken = require('./controllers/Latoken/testLatoken')
 var testbrd = require('./controllers/Bread/testBrd')
 var dai = require('./controllers/Dai/dai')
 var bat = require('./controllers/Bat/bat')
+var maindai = require('./controllers/Dai/maindai')
+var mainbat = require('./controllers/Bat/mainbat')
+var ewgr = require('./controllers/ewgr/ewgr')
 // var eos = require('./controllers/Eos/eos');
 // var xrp = require('./controllers/Ripple/xrp');
  var bch = require('./controllers/BitcoinCash/bch')
@@ -42,11 +45,14 @@ app.use('/api/xlm', xlm);
 app.use('/api/testxct', testxct);
 app.use('/api/testusdt', testusdt);
 app.use('/api/testbnt', testbnt)
-app.use('/api/testcrpt', testcrpt)  
+app.use('/api/testcrpt', testcrpt)
 app.use('/api/testlatoken', testlatoken)
 app.use('/api/testbrd', testbrd)
 app.use('/api/dai', dai)
 app.use('/api/bat', bat)
+app.use('/api/maindai', maindai)
+app.use('/api/mainbat', mainbat)
+app.use('/api/ewgr', ewgr)
 // app.use('/api/eos', eos);
 // app.use('/api/xrp', xrp);
 app.use('/api/testbch', testbch);
