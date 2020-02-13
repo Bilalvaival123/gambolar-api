@@ -8,9 +8,9 @@ const Tx = require("ethereumjs-tx");
 const Web3EthAccounts = require('web3-eth-accounts');
 
 web3.setProvider(
-    new web3.providers.HttpProvider(
-        "https://rinkeby.infura.io/t2utzUdkSyp5DgSxasQX"
-    )
+	new web3.providers.HttpProvider(
+		"https://rinkeby.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
+	)
 );
 
 // ---------------------------------Create Account----------------------------------------------
@@ -19,9 +19,9 @@ router.get("/create_wallet", async function (request, response) {
 	var ResponseMessage = ``;
 	var ResponseData = null;
 	try {
-	console.log('test')
-		var account = new Web3EthAccounts('https://rinkeby.infura.io/t2utzUdkSyp5DgSxasQX');
-console.log('test1')
+		console.log('test')
+		var account = new Web3EthAccounts('https://rinkeby.infura.io/v3/0148422f7f26401b9c90d085d2d3f928');
+		console.log('test1')
 		let wallet = account.create();
 		let walletAddress = wallet.address;
 		const balance = await web3.eth.getBalance(walletAddress);
@@ -48,49 +48,48 @@ console.log('test1')
 		};
 		ResponseMessage = "Completed";
 		ResponseCode = 200;
-    } catch (error) {
+	} catch (error) {
 		ResponseMessage = `Transaction signing stops with the error ${error}`;
 		ResponseCode = 400;
 	} finally {
 		return response.status(200).json({
-			code : ResponseCode,
-			data : ResponseData,
-			msg : ResponseMessage
+			code: ResponseCode,
+			data: ResponseData,
+			msg: ResponseMessage
 		});
 	}
-    
+
 
 });
 
 //-----------------------------Get Balance of Account----------------------------------------------
 
 router.get("/getBalance/:walletAddress", async function (request, response) {
-    var ResponseCode = 200;
+	var ResponseCode = 200;
 	var ResponseMessage = ``;
 	var ResponseData = null;
 	try {
-		if(request.params) {
+		if (request.params) {
 			if (!request.params.walletAddress) {
 				ResponseMessage = "wallet address is missing \n";
 				ResponseCode = 206;
-			}
-			else {
+			} else {
 				let walletAddress = request.params.walletAddress;
 
 				if (walletAddress.length < 42) {
-						ResponseMessage =  "Invalid Wallet Address"
-						ResponseCode = 400;
-						return;
+					ResponseMessage = "Invalid Wallet Address"
+					ResponseCode = 400;
+					return;
 				}
 				const balance = await web3.eth.getBalance(walletAddress);
 				const weiBalance = web3.fromWei(balance.toNumber(), "ether");
 				var date = new Date();
 				var timestamp = date.getTime();
 				var xmlHttp = new XMLHttpRequest();
-				xmlHttp.open( "GET", "http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=" + walletAddress + "&startblock=0&endblock=99999999&sort=asc", false ); // false for synchronous request
+				xmlHttp.open("GET", "http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=" + walletAddress + "&startblock=0&endblock=99999999&sort=asc", false); // false for synchronous request
 				xmlHttp.send();
 				var transactions = JSON.parse(xmlHttp.responseText);
-				
+
 				let sent = 0;
 				let received = 0;
 
@@ -132,9 +131,9 @@ router.get("/getBalance/:walletAddress", async function (request, response) {
 		ResponseCode = 400;
 	} finally {
 		return response.status(200).json({
-			code : ResponseCode,
-			data : ResponseData,
-			msg : ResponseMessage
+			code: ResponseCode,
+			data: ResponseData,
+			msg: ResponseMessage
 		});
 	}
 });
@@ -146,9 +145,9 @@ router.post("/transfer", async function (request, response) {
 	var ResponseCode = 200;
 	var ResponseMessage = ``;
 	var ResponseData = null;
-	
+
 	try {
-		if(request.body) {
+		if (request.body) {
 			var ValidationCheck = true;
 			if (!request.body.from_address) {
 				ResponseMessage = "from address is missing \n";
@@ -169,8 +168,8 @@ router.post("/transfer", async function (request, response) {
 				ResponseMessage += "value must be a number \n";
 				ValidationCheck = false;
 			}
-			
-			if(ValidationCheck == true) {
+
+			if (ValidationCheck == true) {
 				let fromAddress = request.body.from_address;
 				let privateKey = request.body.from_private_key;
 				let toAddress = request.body.to_address;
@@ -191,7 +190,7 @@ router.post("/transfer", async function (request, response) {
 
 				let count = await web3.eth.getTransactionCount(web3.eth.defaultAccount);
 				let gasPriceObj = await getgasprice(web3.eth.defaultAccount);
-				
+
 				if (gasPriceObj.response == '') {
 					let gasPrice = gasPriceObj.gasprice;
 					let gasLimit = 21000;
@@ -216,7 +215,7 @@ router.post("/transfer", async function (request, response) {
 					//console.log('3rd')
 					//ResponseMessage ='3rd'; 
 					let hashObj = await sendrawtransaction(serializedTx);
-				
+
 					if (hashObj.response == '') {
 						let hash = hashObj.hash;
 						ResponseData = await getTransaction(hash);
@@ -232,25 +231,25 @@ router.post("/transfer", async function (request, response) {
 					ResponseCode = 400;
 					return;
 				}
-		} else {
+			} else {
 				ResponseCode = 206
 			}
 		} else {
 			ResponseMessage = "Transaction cannot proceeds as request body is empty";
 			ResponseCode = 204
 		}
-		
+
 	} catch (error) {
 		ResponseMessage = `Transaction signing stops with the error ${error}`;
 		ResponseCode = 400
 	} finally {
 		return response.status(200).json({
-			code : ResponseCode,
-			data : ResponseData,
-			msg : ResponseMessage
+			code: ResponseCode,
+			data: ResponseData,
+			msg: ResponseMessage
 		});
 	}
-    
+
 
 
 
@@ -259,7 +258,7 @@ router.post("/transfer", async function (request, response) {
 
 function getTransaction(hash) {
 	var data;
-	return new Promise(function(resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		web3.eth.getTransaction(hash, function (err, transaction) {
 			var date = new Date();
 			var timestamp = date.getTime();
@@ -272,7 +271,7 @@ function getTransaction(hash) {
 					to: transaction.to,
 					amount: transaction.value / 10 ** 18,
 					fee: transaction.gasPrice,
-					n_confirmation :  conf,
+					n_confirmation: conf,
 					block: transaction.blockNumber,
 					link: `https://www.etherchain.org/tx/${hash}`
 				},
@@ -290,15 +289,15 @@ function getTransaction(hash) {
 function getgasprice() {
 	var gasprice;
 	var response = "";
-	return new Promise(function(resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		web3.eth.getGasPrice(function (err, gsPrice) {
 			if (err) {
 				response = `Gas Bad Request ${err}`;
 			} else {
 				gasprice = gsPrice;
-			} 
+			}
 			var obj = {
-				response:  response,
+				response: response,
 				gasprice: gasprice
 			};
 			resolve(obj);
@@ -310,15 +309,15 @@ function getgasprice() {
 function sendrawtransaction(serializedTx) {
 	var hash;
 	var response = "";
-	return new Promise(function(resolve, reject) {
-		web3.eth.sendRawTransaction("0x" + serializedTx.toString("hex"), function ( err, hsh ) {
+	return new Promise(function (resolve, reject) {
+		web3.eth.sendRawTransaction("0x" + serializedTx.toString("hex"), function (err, hsh) {
 			if (err) {
 				response = `send Bad Request ${err}`;
 			} else {
 				hash = hsh;
-			} 
+			}
 			var obj = {
-				response:  response,
+				response: response,
 				hash: hash
 			};
 			resolve(obj);
@@ -334,7 +333,7 @@ router.get("/track/:hash", async function (request, response) {
 	var ResponseMessage = ``;
 	var ResponseData = null;
 	try {
-		if(request.params) {
+		if (request.params) {
 			if (!request.params.hash) {
 				ResponseMessage = "hash / wallet address is missing \n";
 				ResponseCode = 206;
@@ -347,7 +346,7 @@ router.get("/track/:hash", async function (request, response) {
 
 				} else if (hash.length == 42) {
 					var xmlHttp = new XMLHttpRequest();
-					xmlHttp.open( "GET", 'http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=' + hash + '&startblock=0&endblock=99999999&sort=asc&limit=100', false ); // false for synchronous request
+					xmlHttp.open("GET", 'http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=' + hash + '&startblock=0&endblock=99999999&sort=asc&limit=100', false); // false for synchronous request
 					xmlHttp.send();
 					var transactions = JSON.parse(xmlHttp.responseText);
 					for (let i = 0; i < transactions.result.length; i++) {
@@ -372,12 +371,12 @@ router.get("/track/:hash", async function (request, response) {
 		ResponseCode = 400;
 	} finally {
 		return response.status(200).json({
-			code : ResponseCode,
-			data : ResponseData,
-			msg : ResponseMessage
+			code: ResponseCode,
+			data: ResponseData,
+			msg: ResponseMessage
 		});
 	}
-    
+
 
 });
 
