@@ -10,7 +10,7 @@
   "author": "Hamza Yasin",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "bitcore-explorers": "^1.0.1",
     "bitcore-lib-cash": "^8.3.4",
     "body-parser": "^1.18.3",
